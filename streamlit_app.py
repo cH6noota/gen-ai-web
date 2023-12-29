@@ -48,7 +48,7 @@ if secret_access_key!="" and secret_access_key:
 # モデル有効化の読み込み
 if 'models' not in st.session_state:
     st.session_state["models"] = model_load(access_key, secret_access_key)
-models = st.sidebar.text_area('モデル一覧（カンマ区切り）', value=st.session_state["models"], help="生成したいモデルのIDを入力してください。 例: gpt-3.5-turboなど　https://platform.openai.com/docs/models/overview")
+models = st.sidebar.text_area('モデル一覧（カンマ区切り）', value=st.session_state["models"], help="生成したいモデルのIDを入力してください。 例: gpt-3.5-turbo, amazon.titan-text-lite-v1など　https://platform.openai.com/docs/models/overview  https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html")
 if models!="" and models:
   st.session_state["models"] = models
 

@@ -5,13 +5,13 @@ Resources:
   MyUser:
     Type: 'AWS::IAM::User'
     Properties:
-      UserName: 'MyUser'
+      UserName: 'bedrock-app-user'
       Policies:
         - PolicyName: 'MyPolicy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Sid: 'bedrock-app'
+              - Sid: 'bedrockappPolicy'
                 Effect: 'Allow'
                 Action:
                   - 'bedrock:InvokeModel'
