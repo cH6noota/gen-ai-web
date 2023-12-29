@@ -17,50 +17,53 @@ st.set_page_config(page_title="GenAI Quickstart")
 st.title('GenAI Quickstart')
 
 # APIキーの読み込み
-_openai_api_key = gpt_load()
+if 'openai_api_key' not in st.session_state:
+    st.session_state['openai_api_key'] = ''
 
-openai_api_key = st.sidebar.text_input('OpenAI API Key', value=_openai_api_key, type="password")
+openai_api_key = st.sidebar.text_input('OpenAI API Key', value=st.session_state['openai_api_key'], type="password")
 
 if openai_api_key!="" and openai_api_key:
-  gpt_save(openai_api_key)
+  st.session_state['openai_api_key'] = openai_api_key
 
 
 # AWS Access keyの読み込み
-_access_key = access_key_load()
+if 'access_key' not in st.session_state:
+    st.session_state['access_key'] = ''
 
-access_key = st.sidebar.text_input('AWS アクセスキー', value=_access_key, type="password", help="AWSアカウントでアクセスキーを発行してください。以下のリンクから作成可能です。https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=https%3A%2F%2Fmorita-chikara-ai-quick.s3.ap-northeast-1.amazonaws.com%2Frole.yml&stackName=ai-quick-user")
+access_key = st.sidebar.text_input('AWS アクセスキー', value=st.session_state['access_key'], type="password", help="AWSアカウントでアクセスキーを発行してください。以下のリンクから作成可能です。https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=https%3A%2F%2Fmorita-chikara-ai-quick.s3.ap-northeast-1.amazonaws.com%2Frole.yml&stackName=ai-quick-user")
 
 if access_key!="" and access_key:
-  access_key_save(access_key)
+  st.session_state['access_key'] = access_key
 
 # AWS Secret Access keyの読み込み
-_secret_access_key = secret_access_key_load()
+if 'secret_access_key' not in st.session_state:
+    st.session_state["secret_access_key"] = ''
 
-secret_access_key = st.sidebar.text_input('AWS シークレットアクセスキー', value=_secret_access_key, type="password")
+secret_access_key = st.sidebar.text_input('AWS シークレットアクセスキー', value=st.session_state["secret_access_key"], type="password")
 
 if secret_access_key!="" and secret_access_key:
-  secret_access_key_save(secret_access_key)
+  st.session_state["secret_access_key"] = secret_access_key
 
 
 # モデル有効化の読み込み
-_models = model_load(access_key, secret_access_key)
-models = st.sidebar.text_area('モデル一覧（カンマ区切り）', value=_models, help="生成したいモデルのIDを入力してください。 例: gpt-3.5-turboなど　https://platform.openai.com/docs/models/overview")
+if 'models' not in st.session_state:
+    st.session_state["models"] = model_load(access_key, secret_access_key)
+models = st.sidebar.text_area('モデル一覧（カンマ区切り）', value=st.session_state["models"], help="生成したいモデルのIDを入力してください。 例: gpt-3.5-turboなど　https://platform.openai.com/docs/models/overview")
 if models!="" and models:
-  model_save(models)
+  st.session_state["models"] = models
 
 if st.sidebar.button('モデルの自動読み込み', type="primary"):
   print(access_key, secret_access_key)
   models = model_load(access_key, secret_access_key ,True)
-  # print(models)
-  model_save(models)
+  st.session_state["models"] = models
 
 # systemの読み込み
-_system  = system_load()
-
-system = st.sidebar.text_input('システムプロンプト', value=_system)
+if 'system' not in st.session_state:
+    st.session_state["system"] = "あなたは優秀なAIアシスタントです"
+system = st.sidebar.text_input('システムプロンプト', value=st.session_state["system"])
 
 if system!="" and system:
-  system_save(system)
+  st.session_state["system"] = system
 
 
 def render(openai_api_key, system, text, model_name):
