@@ -4,17 +4,17 @@ import threading
 
 import lib.gpt as gpt
 import lib.bedrock as bedrock
-from lib.memory import gpt_load, gpt_save
-from lib.memory import model_load, model_save
-from lib.memory import system_load, system_save
-from lib.memory import access_key_load, access_key_save
-from lib.memory import secret_access_key_load, secret_access_key_save
+from lib.memory import model_load
 from lib.threads import BaseThreading
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 
 st.set_page_config(page_title="GenAI Quickstart")
 st.title('GenAI Quickstart')
+
+# ローカルモードの読み込み
+if 'local_mode' not in st.session_state:
+    st.session_state["local_mode"] = False
 
 # APIキーの読み込み
 if 'openai_api_key' not in st.session_state:
@@ -65,6 +65,12 @@ system = st.sidebar.text_input('システムプロンプト', value=st.session_s
 if system!="" and system:
   st.session_state["system"] = system
 
+# localmode 
+local_mode = st.sidebar.checkbox('ローカルモード', value=st.session_state["local_mode"])
+if local_mode:
+  st.session_state["local_mode"] = True
+
+
 
 def render(openai_api_key, system, text, model_name):
   if "gpt" in  model_name:
@@ -85,7 +91,7 @@ def model_multiple_request(text):
   threads = []
   for model_name in models.split(","):
     model_name = model_name.replace(" ","").replace("　","").replace("	","")
-    execute_func = lambda : render(openai_api_key, system, text, model_name)
+    execute_func = lambda : render(openai_api_key, st.session_state["system"], text, model_name)
     thread = BaseThreading(model_name, execute_func)
     add_script_run_ctx(thread)
     thread.start()
@@ -100,10 +106,5 @@ with st.form('my_form'):
   if submitted:
     with st.spinner('しばらくお待ちください'):
       model_multiple_request(text)
-      # asyncio.run(model_multiple_request(text))
-      # message = gpt.call(openai_api_key, system, text)
-      # with st.chat_message("ChatGPT", avatar="🤖"):
-      #   st.caption("ChatGPT")
-      #   st.write(message)
 
 

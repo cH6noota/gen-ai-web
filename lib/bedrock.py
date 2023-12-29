@@ -1,13 +1,21 @@
 import boto3 
 import json
+import streamlit as st
 
 def client_get(service_name, access_key, secret_access_key):
-    client = boto3.client(
-                service_name=service_name,
-                region_name="us-east-1",
-                aws_access_key_id=access_key,
-                aws_secret_access_key=secret_access_key
-    )
+    if st.session_state["local_mode"]:
+        print("Local")
+        client = boto3.client(
+                    service_name=service_name,
+                    region_name="us-east-1"
+        )
+    else:
+        client = boto3.client(
+                    service_name=service_name,
+                    region_name="us-east-1",
+                    aws_access_key_id=access_key,
+                    aws_secret_access_key=secret_access_key
+        )
     return client
 
 
@@ -17,7 +25,8 @@ def list_model(access_key, secret_access_key):
     bedrock = client_get('bedrock', access_key, secret_access_key)
     try:
         res = bedrock.list_foundation_models()['modelSummaries']
-    except:
+    except Exception as e:
+        print(e)
         return []        
     # 'modelId', 'inputModalities', 'modelLifecycle'
     res = filter(
