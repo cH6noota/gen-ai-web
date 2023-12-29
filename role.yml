@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Create a user with a specific policy and output the access key'
+
+Resources:
+  MyUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: 'MyUser'
+      Policies:
+        - PolicyName: 'MyPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: 'bedrock-app'
+                Effect: 'Allow'
+                Action:
+                  - 'bedrock:InvokeModel'
+                  - 'bedrock:ListFoundationModels'
+                Resource: '*'
+
+  MyAccessKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref MyUser
+
+Outputs:
+  AccessKeyId:
+    Description: 'Access Key ID of the user'
+    Value: !Ref MyAccessKey
+  SecretAccessKey:
+    Description: 'Secret Access Key of the user'
+    Value: !GetAtt MyAccessKey.SecretAccessKey
